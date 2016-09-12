@@ -1,6 +1,6 @@
 # Logstash Auth0 JWT Validator
 
-This filter validates an Auth0 JWT token, and drops events if validation fails.
+This filter validates an Auth0 JWT token, and drops an event if validation fails. The JWT is passed in via a JSON property 'jwt'.
 
 # Config
 
