@@ -66,7 +66,10 @@ class LogStash::Filters::Auth0Jwt < LogStash::Filters::Base
     end
 
     if @cache[event['jwt']] != true
+      @logger.debug("JWT not authorised, event dropped")
       event.cancel
+    else
+      @logger.debug("JWT authorised")
     end
 
     # filter_matched should go in the last line of our successful code
