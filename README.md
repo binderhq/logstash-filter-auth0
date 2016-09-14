@@ -6,7 +6,7 @@ This filter validates an Auth0 JWT token, and drops an event if validation fails
 
 This filter has one required configuration parameter - 'domain'. This maps to the value shown in the Auth0 dashboard under Clients > Settings > Domain. 
 
-Also available is an optional parameter - 'purge_seconds' - for configuraing the length of time for which the cache is kept.
+Also available is an optional parameter - 'purge_seconds' - for configuraing the length of time for which the cache is kept, and 'include_user_properties' to enable adding any user data from the Auth0 response body to each event.
 
 # Logstash Plugin
 
