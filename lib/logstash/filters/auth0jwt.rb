@@ -37,13 +37,14 @@ class LogStash::Filters::Auth0Jwt < LogStash::Filters::Base
   public
   def filter(event)
 
+    jwt = event['jwt']
     if @last_purge - Time.now > @purge_seconds
       @cache.clear
     end
 
-    if !@cache[event['jwt']]
+    if !@cache[jwt]
       data = {
-        id_token: event['jwt']
+        id_token: jwt
       }
       uri = URI.parse("https://#{@domain}/tokeninfo")
       headers = {'Content-Type' => "application/json"}
@@ -53,19 +54,21 @@ class LogStash::Filters::Auth0Jwt < LogStash::Filters::Base
       request.body = data.to_json
       response = https.request(request)
 
-      userHash = JSON.parse(response.body)
-
-      include_user_properties.each { |user_property|
-
-        if userHash[user_property]
-          event.set(user_property, userHash[user_property])
-        end
-      }
-
-      @cache[event['jwt']] = response.code == "200"
+      if response.code == "200"
+        userHash = JSON.parse(response.body)
+        @cache[jwt] = userHash
+      else
+        @cache[jwt] = nil
+      end
     end
 
-    if @cache[event['jwt']] != true
+    include_user_properties.each { |user_property|
+      if !@cache[jwt].nil? && @cache[jwt][user_property]
+        event.set(user_property, @cache[jwt][user_property])
+      end
+    }
+
+    if @cache[jwt].nil?
       @logger.debug("JWT not authorised, event dropped")
       event.cancel
     else
