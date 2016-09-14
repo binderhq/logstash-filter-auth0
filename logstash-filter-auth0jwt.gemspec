@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name          = 'logstash-filter-auth0jwt'
-  s.version       = '0.1.0'
+  s.version       = '0.1.1'
   s.licenses      = ['Apache License (2.0)']
   s.summary       = 'Logstash filter plugin for Auth0 JWT validation.'
   s.description   = 'Logstash filter plugin for Auth0 JWT validation.'
