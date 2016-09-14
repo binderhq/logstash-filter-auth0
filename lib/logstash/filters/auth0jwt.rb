@@ -26,6 +26,7 @@ class LogStash::Filters::Auth0Jwt < LogStash::Filters::Base
   # Replace the message with this value.
   config :domain, :validate => :string, :required => true
   config :purge_seconds, :validate => :number, :default => 3600
+  config :include_user_properties, :validate => :array, :default => []
 
   public
   def register
@@ -51,6 +52,15 @@ class LogStash::Filters::Auth0Jwt < LogStash::Filters::Base
       request = Net::HTTP::Post.new(uri.request_uri, headers)
       request.body = data.to_json
       response = https.request(request)
+
+      userHash = JSON.parse(response.body)
+
+      include_user_properties.each { |user_property|
+
+        if userHash[user_property]
+          event.set(user_property, userHash[user_property])
+        end
+      }
 
       @cache[event['jwt']] = response.code == "200"
     end
